@@ -8,7 +8,7 @@ This repository contains the official implementation of the CVPR 2023 paper [Ing
 ![Teaser](figure/teaser.png)
 
 ## Requirements
-You can install the required libraries for `IDR`by the following command:
+You can install the required libraries for `IDR` by the following command:
 
 ```
 pip install -r requirements.txt
