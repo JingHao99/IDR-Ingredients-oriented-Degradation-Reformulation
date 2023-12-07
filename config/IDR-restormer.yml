@@ -1,0 +1,134 @@
+#### general settings
+name: IDR
+model_type: IDR_Model
+scale: 1
+pretrained: True
+is_train: true
+interupt_protection: False
+dist: false
+
+#### datasetss
+datasets:
+  train:
+    name: TrainSet
+    type: IDR_dataset
+    mode: train
+    de_type: ['denoise_15', 'denoise_25', 'denoise_50', 'derain', 'dehaze', 'delowlight', 'deblur']
+    derain_file: ['/ghome/zhangjh/icode/IDR/docs/test/test_derain_rain200L_test.txt']
+    dehaze_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_dehaze_OTS.txt']
+    deblur_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_deblur_GoPro.txt']
+    denoise_file: ['/ghome/zhangjh/icode/IDR/docs/single_clear/train_denoise_BSD400.txt','/ghome/zhangjh/icode/IDR/docs/single_clear/train_denoise_WED.txt']
+    delowlight_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_delowlight_LOL.txt']
+    clean_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_clean_5c.txt']
+    data_augmentation: 2   # optional: 1, 2
+    scale: 1
+    per_degra: 7
+    label_smooth: 0.1
+    num_degra: 5
+    num_ops: 5
+
+    #data loader
+    use_shuffle: false
+    num_worker_per_gpu: 5  # per GPU
+    batch_size_per_gpu: 7
+
+    progressive_training: False
+    ### -------------Progressive training--------------------------
+  #  per_batch_sizes: [6,4,3,2,1,1]             # Batch size per gpu
+  #  iters: [92000,64000,48000,36000,36000,24000]
+  #  patch_size: 256   # Max patch size for progressive training
+  #  per_patch_sizes: [128,160,184,224,320,328]  # Patch sizes for progressive training.
+    ### ------------------------------------------------------------
+
+    ### ------- Training on single fixed-patch size 128x128---------
+    per_batch_sizes: [5]     # len(de_type)
+    iters: [300000]
+    patch_size: 128
+    per_patch_sizes: [128]
+    ### ------------------------------------------------------------
+
+  val:
+    name: ValSet
+    type: Uint8_dataset
+    mode: val
+    num_ops: 4
+    num_degra: 5
+    group_file: ['/ghome/zhangjh/icode/IDR/docs/test/test_all_mini7.txt'] 
+    #data loader
+    batch_size_per_gpu: 1
+
+
+
+#### network structures
+network_g:
+  type: IDR_restormer
+  inp_channels: 3
+  out_channels: 3
+  dim: 30
+  num_blocks: [2,3,3,4]
+  num_refinement_blocks: 2
+  heads: [1,2,4,8]
+  ffn_expansion_factor: 2.66
+  bias: False
+  LayerNorm_type: WithBias
+  num_degra_queries: 24
+  keep_degra: 48
+  sam: true
+  degra_type: 5
+  ops_type: 5
+  pred: True
+
+
+#### path
+path:
+  root: ./results
+  pretrain_model_G: ~ 
+  strict_load: true
+  resume_state: ~ 
+
+
+#### training settings: learning rate scheme, loss
+train:
+  manual_seed: 9181
+  epoch: 1200
+  epochs_encoder: 550
+  warmup_iter: -1  # -1: no warm up
+  use_grad_clip: false
+
+  mixing_augs:
+    mixup: false
+    mixup_beta: 1.2
+    use_identity: true
+
+  Auto_scheduler: True
+  scheduler:
+    type: CosineAnnealingRestartCyclicLR
+    periods: [92000, 88000, 172000, 128000]
+    restart_weights: [1,1,0.5,0.3]
+    eta_mins: [0.00002,0.000001,0.000001,0.000001]
+
+
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4   
+
+  # loss
+  pixel_criterion: IDR
+  loss_0_weight: 1
+  loss_1_weight: 0.01
+
+
+# validation settings
+val:
+  val_milelstone: 600
+  val_epoch: [25,20]
+  manual_seed: 0
+  save_img: false
+  save_image_epoch: !!float 100
+
+
+#### logger
+logger:
+  print_freq: 1
+  save_checkpoint_epoch: !!float 100
+  use_tb_logger: false
