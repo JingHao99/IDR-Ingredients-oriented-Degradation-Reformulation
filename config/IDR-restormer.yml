@@ -4,7 +4,7 @@ model_type: IDR_Model
 scale: 1
 pretrained: True
 is_train: true
-interupt_protection: False
+interupt_protection: True
 dist: false
 
 #### datasetss
@@ -14,12 +14,12 @@ datasets:
     type: IDR_dataset
     mode: train
     de_type: ['denoise_15', 'denoise_25', 'denoise_50', 'derain', 'dehaze', 'delowlight', 'deblur']
-    derain_file: ['/ghome/zhangjh/icode/IDR/docs/test/test_derain_rain200L_test.txt']
-    dehaze_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_dehaze_OTS.txt']
-    deblur_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_deblur_GoPro.txt']
-    denoise_file: ['/ghome/zhangjh/icode/IDR/docs/single_clear/train_denoise_BSD400.txt','/ghome/zhangjh/icode/IDR/docs/single_clear/train_denoise_WED.txt']
-    delowlight_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_delowlight_LOL.txt']
-    clean_file: ['/ghome/zhangjh/icode/IDR/docs/train/train_clean_5c.txt']
+    derain_file: ['./docs/train/train_derain_rain200L.txt']
+    dehaze_file: ['./docs/train/train_dehaze_OTS.txt']
+    deblur_file: ['./docs/train/train_deblur_GoPro.txt']
+    denoise_file: ['./docs/train/train_denoise_BSD400.txt','./docs/train/train_denoise_WED.txt']
+    delowlight_file: ['./docs/train/train_delowlight_LOL.txt']
+    clean_file: ['./docs/train/train_clean.txt']
     data_augmentation: 2   # optional: 1, 2
     scale: 1
     per_degra: 7
@@ -53,7 +53,7 @@ datasets:
     mode: val
     num_ops: 4
     num_degra: 5
-    group_file: ['/ghome/zhangjh/icode/IDR/docs/test/test_all_mini7.txt'] 
+    group_file: ['./docs/test/test_bench.txt'] 
     #data loader
     batch_size_per_gpu: 1
 
