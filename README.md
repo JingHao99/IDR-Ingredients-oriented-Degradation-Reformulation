@@ -8,12 +8,10 @@ This repository contains the official implementation of the CVPR 2023 paper [Ing
 ![Teaser](figure/teaser.png)
 
 ## Requirements
-A suitable [conda](https://conda.io/) environment named `IDR` can be created
-and activated with:
+You can install the required libraries for `IDR`by the following command:
 
 ```
-conda env create -f environment.yaml
-conda activate IDR
+pip install -r requirements.txt
 ```
 
 
